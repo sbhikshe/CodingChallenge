@@ -1,16 +1,89 @@
-startButtonEl = document.querySelector("#startButton");
-introEl = document.querySelector("#intro");
-timerEl = document.querySelector("#time-remaining");
-qaEl = document.querySelector("#qaSection");
+var startButtonEl = document.querySelector("#startButton");
+var introEl = document.querySelector("#intro");
+var timerEl = document.querySelector("#time-remaining");
+var qaEl = document.querySelector("#qaSection");
+
+var questionEl;
+var answerListUl;
+var answersLi = [];
+var nextButtonEl;
+
 
 var quizTime = 60;
-var qaList = ["The header tag appears in which portion of the HTML document?",
-                "meta", "body", "div", "footer", "2"]; /* 2 - index of the right answer */
+var qa1 = {
+    question: "The header tag appears in which portion of the HTML document?",
+    choices: ["meta", "body", "div", "footer"],
+    answer: "body"
+};
+
+var qa2 = {
+    question: "The CSS stylesheet is linked to the HTML document using the ________ tag.",
+    choices: ["a href", "style", "link", "src"],
+    answer: "link"
+};
+
+var qaList = [qa1, qa2];                
 var nextQuestion = 0;
 var showNext = true;
 
+function displayQuestion() {
 
-startButtonEl.addEventListener("click", function() {
+    /* we are done, no more Qs to show */
+    if (nextQuestion >= qaList.length) {
+        console.log("No more questions to show");
+        return false;
+    } else 
+    if (showNext === true) {
+        /* this is the first question or the user answered the current question */
+        /* get the next qa object from the qaList */
+        var qa = qaList[nextQuestion];
+
+        /* if this is the first question, create the ul/li elements to */
+        /* to show the question and answers */
+        if(nextQuestion === 0) {
+            questionEl = document.createElement("p");
+            qaEl.appendChild(questionEl);
+
+            answerListUl = document.createElement("ol");
+            qaEl.appendChild(answerListUl);
+
+            for (var i = 0; i < 4; i++) {
+                answersLi[i] = document.createElement("li");
+                answerListUl.appendChild(answersLi[i]);
+            }
+        }
+
+        /* set the question and choices to the ul and li */
+        questionEl.textContent = qa.question;
+        for (var i = 0; i < 4; i++) {
+            answersLi[i].textContent = qa.choices[i];
+        }
+
+        /* don't show the next until the user has answered this one*/
+        /* showNext should be set to true in the Next button event listener */
+        showNext = false; 
+        /* increment nextQuestion to use the next time */
+        nextQuestion++;
+        return true; /* we have put out the next question */
+    } else {
+        console.log("showNext is not true, we are waiting for the user to answer");
+    }   
+}
+
+function checkAnswer(event) {
+    console.log("In check answer: ", event);
+    /*check the answer */
+    /* show correct / wrong */
+    /* go to next question */
+    showNext = true;
+    displayQuestion();
+}
+
+function displayScores() {
+    console.log("Need to show the score");
+}
+
+function startQuiz() {
 
     /* Remove intro to the game */
     introEl.children[0].textContent = "";
@@ -20,44 +93,32 @@ startButtonEl.addEventListener("click", function() {
     // startButtonEl.textContent = "";
 
     var timerId = setInterval(function() {
-
         quizTime--;
         timerEl.textContent = quizTime;
 
         /* if out of time, stop timer */
         /* and show scores */
         /* else */
-        if ((showNext == true) && (nextQuestion < qaList.length)) {
         /* display questions */
-        var question = document.createElement("p");
-        question.textContent = qaList[nextQuestion];
-        qaEl.appendChild(question);
-        console.log(qaEl.children[0].textContent);
-
-        var answerListUl = document.createElement("ul");
-        qaEl.appendChild(answerListUl);
-
-        var answersLi = [];
-
-        for (var i = 0; i < 4; i++) {
-            answersLi[i] = document.createElement("li");
-            answersLi[i].textContent = qaList[i+1]; // 0th element is the question, asnwers start at 1st elt
-            answerListUl.appendChild(answersLi[i]);
-            answerListUl.appendChild(answersLi[i]);
-        }
-        var nextButton = document.createElement("button");
-        nextButton.textContent = "Next";
-        //nextButton.setAttribute(); /// need to center button
-        qaEl.appendChild(nextButton);
-
-        showNext = false;
-        nextQuestion++;
-
+        if (quizTime === 0) {
+            clearInterval(timerId);
+            displayScores();
         } else {
-            /* we are already showing the question */
-            /* wait for answer (click) or timeout */
+            if (displayQuestion()) {
+                /* add the next button */
+                nextButtonEl = document.createElement("button");
+                nextButtonEl.textContent = "Next";
+                qaEl.appendChild(nextButtonEl);
+                nextButtonEl.addEventListener("click", checkAnswer);
+            } else {
+                /* done with the questions, and we are still in the timer */
+                /* stop the timer */
+                clearInterval(timerId);
+                displayScores();
+            }
         }
-
     }, 1000);
-});
+}
+
+startButtonEl.addEventListener("click", startQuiz);
 

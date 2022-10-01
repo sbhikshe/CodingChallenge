@@ -7,6 +7,7 @@ var questionEl;
 var answerListUl;
 var answersLi = [];
 var nextButtonEl;
+var responseToUserEl;
 
 
 var quizTime = 60;
@@ -22,7 +23,14 @@ var qa2 = {
     answer: "link"
 };
 
-var qaList = [qa1, qa2];                
+var qa3 = {
+    question: "An array in Javascript can contain items of type _________ .",
+    choices: ["all numbers", "all strings", "all objects", "any combination of types"],
+    answer: "any combination of types"
+};
+
+
+var qaList = [qa1, qa2, qa3];                
 var nextQuestion = 0;
 var showNext = true;
 
@@ -30,8 +38,15 @@ function displayQuestion() {
 
     /* we are done, no more Qs to show */
     if (nextQuestion >= qaList.length) {
-        console.log("No more questions to show");
-        return false;
+        if(showNext === false) {
+            /* we are waiting for the user to answer the last question */
+            console.log("No more questions. Waiting for the last answer");
+            return "same";
+        } else {
+            /* user has answered the last question, and there are no more */
+            console.log("No more questions to show");
+            return "none";
+        }
     } else 
     if (showNext === true) {
         /* this is the first question or the user answered the current question */
@@ -50,7 +65,19 @@ function displayQuestion() {
             for (var i = 0; i < 4; i++) {
                 answersLi[i] = document.createElement("li");
                 answerListUl.appendChild(answersLi[i]);
+                answersLi[i].setAttribute("style", "background-color: lightblue; width: 200px; padding: 10px; margin: 5px;");
             }
+
+            /* add the next button */
+            nextButtonEl = document.createElement("button");
+            nextButtonEl.textContent = "Next";
+            nextButtonEl.setAttribute("style", "padding: 5px; margin: 10px;")
+            qaEl.appendChild(nextButtonEl);
+
+            responseToUserEl = document.createElement("p");
+            responseToUserEl.textContent = "";
+            responseToUserEl.setAttribute("style", "font-size: 150%; padding: 5px; margin-left: 20px;")
+            qaEl.appendChild(responseToUserEl);
         }
 
         /* set the question and choices to the ul and li */
@@ -64,29 +91,35 @@ function displayQuestion() {
         showNext = false; 
         /* increment nextQuestion to use the next time */
         nextQuestion++;
-        return true; /* we have put out the next question */
+        return "new"; /* we have put out the next question */
     } else {
         console.log("showNext is not true, we are waiting for the user to answer");
+        return "same";
     }   
 }
 
 function checkAnswer(event) {
     console.log("In check answer: ", event);
-    /*check the answer */
+    /* check the answer */
     /* show correct / wrong */
     /* go to next question */
     showNext = true;
+
     displayQuestion();
 }
 
 function displayScores() {
     console.log("Need to show the score");
+    /* show the scores */
+    /* enable the start button again */
+    startButtonEl.disabled = false;
 }
 
 function startQuiz() {
 
     /* Remove intro to the game */
     introEl.children[0].textContent = "";
+    startButtonEl.disabled = true;
 
        /* Start button: 1) remove 2) make it grey/ inactive */
     /* 3) change to 'stop' 4) change to 'restart' */
@@ -104,13 +137,13 @@ function startQuiz() {
             clearInterval(timerId);
             displayScores();
         } else {
-            if (displayQuestion()) {
-                /* add the next button */
-                nextButtonEl = document.createElement("button");
-                nextButtonEl.textContent = "Next";
-                qaEl.appendChild(nextButtonEl);
+            var isQuestionDisplayed = displayQuestion();
+            if ( isQuestionDisplayed === "new") {
+                /* add the next button listener */
                 nextButtonEl.addEventListener("click", checkAnswer);
-            } else {
+            } else if (isQuestionDisplayed === "same") {
+                console.log("Waiting for user to respond");
+            } else if (isQuestionDisplayed === "none") {
                 /* done with the questions, and we are still in the timer */
                 /* stop the timer */
                 clearInterval(timerId);

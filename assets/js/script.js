@@ -31,11 +31,21 @@ var qa3 = {
 
 
 var qaList = [qa1, qa2, qa3];                
-var nextQuestion = 0;
 var showNext = true;
+var currentQuestion;
+var nextQuestion = 0;
 
-function displayQuestion() {
+var score = 0;
 
+function displayQuestion(event) {
+
+    /* If we came to this on the next button click, 
+    we want to set the showNext to true to display 
+    the next question. Else we don't know that the user 
+    already responded and we've show correct / wrong. */
+    if(event && event.target === nextButtonEl) {
+        showNext = true;
+    }
     /* we are done, no more Qs to show */
     if (nextQuestion >= qaList.length) {
         if(showNext === false) {
@@ -51,7 +61,7 @@ function displayQuestion() {
     if (showNext === true) {
         /* this is the first question or the user answered the current question */
         /* get the next qa object from the qaList */
-        var qa = qaList[nextQuestion];
+        currentQuestion = qaList[nextQuestion];
 
         /* if this is the first question, create the ul/li elements to */
         /* to show the question and answers */
@@ -81,10 +91,12 @@ function displayQuestion() {
         }
 
         /* set the question and choices to the ul and li */
-        questionEl.textContent = qa.question;
+        questionEl.textContent = currentQuestion.question;
         for (var i = 0; i < 4; i++) {
-            answersLi[i].textContent = qa.choices[i];
+            answersLi[i].textContent = currentQuestion.choices[i];
         }
+        responseToUserEl.textContent = "";
+        answerListUl.addEventListener("click", checkAnswer);
 
         /* don't show the next until the user has answered this one*/
         /* showNext should be set to true in the Next button event listener */
@@ -93,7 +105,7 @@ function displayQuestion() {
         nextQuestion++;
         return "new"; /* we have put out the next question */
     } else {
-        console.log("showNext is not true, we are waiting for the user to answer");
+        console.log("showNext is not true, waiting for the user to respond or click next");
         return "same";
     }   
 }
@@ -102,10 +114,19 @@ function checkAnswer(event) {
     console.log("In check answer: ", event);
     /* check the answer */
     /* show correct / wrong */
-    /* go to next question */
-    showNext = true;
+    console.log("event.target" + event.target);
+    console.log("event.target.textContent: " + event.target.textContent);
 
-    displayQuestion();
+    if(event.target.textContent === currentQuestion.answer ) {
+        console.log("Correct answer");
+        responseToUserEl.textContent = "Correct!"
+        score++;
+    } else {
+        console.log("Wrong answer");
+        responseToUserEl.textContent = "Wrong!"
+        /* decrement time? */
+    }
+    answerListUl.removeEventListener("click", checkAnswer);
 }
 
 function displayScores() {
@@ -140,12 +161,14 @@ function startQuiz() {
             var isQuestionDisplayed = displayQuestion();
             if ( isQuestionDisplayed === "new") {
                 /* add the next button listener */
-                nextButtonEl.addEventListener("click", checkAnswer);
+                console.log("new question displayed, wait for answer");
+                nextButtonEl.addEventListener("click", displayQuestion);
             } else if (isQuestionDisplayed === "same") {
-                console.log("Waiting for user to respond");
+                console.log("Continue to display same question, Waiting for user to respond");
             } else if (isQuestionDisplayed === "none") {
                 /* done with the questions, and we are still in the timer */
                 /* stop the timer */
+                console.log("all qs done, stopping the timer, showing scores")
                 clearInterval(timerId);
                 displayScores();
             }

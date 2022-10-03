@@ -229,6 +229,7 @@ function handleScoreSubmit() {
     goBackButtonEl = document.createElement("button");
     goBackButtonEl.textContent = "Go Back";
     goBackButtonEl.setAttribute("style", "margin-left: 10px; margin-bottom: 10px");
+    goBackButtonEl.addEventListener('click', goBackToStart);
     qaEl.appendChild(goBackButtonEl);
 
     clearHighScoresButtonEl = document.createElement("button");
@@ -242,6 +243,26 @@ function handleScoreSubmit() {
 function clearScores() {
     localStorage.removeItem("score");
     highScoresListOl.removeChild(highScoresLi[0]);
+}
+
+function goBackToStart() {
+    /* clear the high scores display */
+    qaEl.removeChild(highScoresCaptionEl);
+    qaEl.removeChild(highScoresListOl);
+    qaEl.removeChild(goBackButtonEl);
+    qaEl.removeChild(clearHighScoresButtonEl);
+
+    /* return to start */
+    resetTime();
+    introEl.children[0].textContent = "This is a timed multiple choice quiz with only one correct answer for each question. Good luck!";
+    startButtonEl.disabled = false;
+    showNext = true;
+    nextQuestion = 0;
+}
+
+function resetTime() {
+    quizTime = 100;
+    timerEl.textContent = quizTime;
 }
 
 function startQuiz() {

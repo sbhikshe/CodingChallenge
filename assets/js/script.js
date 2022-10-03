@@ -18,6 +18,12 @@ var enterInitialsEl;
 var initialsEl;
 var submitButtonEl;
 
+/* High scores display */
+var highScoresCaptionEl;
+var highScoresListOl;
+var highScoresLi = []; /* append initials + score and display as a single string li */
+var goBackButtonEl;
+var clearHighScoresButtonEl;
 
 var quizTime = 100;
 var qa1 = {
@@ -167,6 +173,7 @@ function displayScores() {
 
     /* Enter initials + Submit */
     /* This <div> contains "Enter Initials: <input box> Submit button " */
+
     initialsDivEl = document.createElement("div");
     qaEl.appendChild(initialsDivEl);
 
@@ -187,9 +194,54 @@ function displayScores() {
     initialsDivEl.appendChild(submitButtonEl);
 
     /* when you hit submit, stores to local storage */
+    submitButtonEl.addEventListener("click", handleScoreSubmit);
     
     /* enable the start button again */
     startButtonEl.disabled = false;
+}
+
+function handleScoreSubmit() {
+
+    /* store the initials and the score to local storage */
+    localStorage.setItem("score", initialsEl.value.toUpperCase() + " " + quizTime);
+
+    /* clear the display scores */
+    qaEl.removeChild(resultsCaptionEl);
+    qaEl.removeChild(scoreEl);
+    qaEl.removeChild(initialsDivEl);
+    initialsDivEl.removeChild(enterInitialsEl);
+    initialsDivEl.removeChild(initialsEl);
+    initialsDivEl.removeChild(submitButtonEl);
+
+    /* and display the High Scores with option to "Go back" or "Clear high scores" */
+    highScoresCaptionEl = document.createElement("h2");
+    highScoresCaptionEl.textContent = "High Scores";
+    highScoresCaptionEl.setAttribute("style", "font-weight: bold; padding: 5px; margin-left: 10px;");
+    qaEl.appendChild(highScoresCaptionEl);
+
+    highScoresListOl = document.createElement("ol");
+    qaEl.appendChild(highScoresListOl);
+
+    highScoresLi[0] = document.createElement("li");
+    highScoresLi[0].textContent = localStorage.getItem("score");
+    highScoresListOl.appendChild(highScoresLi[0]);
+
+    goBackButtonEl = document.createElement("button");
+    goBackButtonEl.textContent = "Go Back";
+    goBackButtonEl.setAttribute("style", "margin-left: 10px; margin-bottom: 10px");
+    qaEl.appendChild(goBackButtonEl);
+
+    clearHighScoresButtonEl = document.createElement("button");
+    clearHighScoresButtonEl.textContent = "Clear High scores";
+    clearHighScoresButtonEl.setAttribute("style", "margin-left: 20px; margin-bottom: 10px");
+    clearHighScoresButtonEl.addEventListener('click', clearScores);
+    qaEl.appendChild(clearHighScoresButtonEl);
+
+}
+
+function clearScores() {
+    localStorage.removeItem("score");
+    highScoresListOl.removeChild(highScoresLi[0]);
 }
 
 function startQuiz() {

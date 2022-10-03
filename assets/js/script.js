@@ -3,14 +3,23 @@ var introEl = document.querySelector("#intro");
 var timerEl = document.querySelector("#time-remaining");
 var qaEl = document.querySelector("#qaSection");
 
+/* Q&A display */
 var questionEl;
 var answerListUl;
 var answersLi = [];
 var nextButtonEl;
 var responseToUserEl;
 
+/* Scores display */
+var resultsCaptionEl;
+var scoreEl;
+var initialsDivEl;
+var enterInitialsEl;
+var initialsEl;
+var submitButtonEl;
 
-var quizTime = 60;
+
+var quizTime = 100;
 var qa1 = {
     question: "The header tag appears in which portion of the HTML document?",
     choices: ["meta", "body", "div", "footer"],
@@ -35,7 +44,7 @@ var showNext = true;
 var currentQuestion;
 var nextQuestion = 0;
 
-var score = 0;
+var score = 0; 
 
 function displayQuestion(event) {
 
@@ -66,6 +75,7 @@ function displayQuestion(event) {
         /* if this is the first question, create the ul/li elements to */
         /* to show the question and answers */
         if(nextQuestion === 0) {
+
             questionEl = document.createElement("p");
             qaEl.appendChild(questionEl);
 
@@ -124,14 +134,60 @@ function checkAnswer(event) {
     } else {
         console.log("Wrong answer");
         responseToUserEl.textContent = "Wrong!"
-        /* decrement time? */
+        /* decrement time, this affects the game score is the time */
+        /* value when we are done (if timeout, score = 0), else *
+        /* score = timer value */
+        quizTime -= 10; /* knock down by 10 seconds */
     }
     answerListUl.removeEventListener("click", checkAnswer);
 }
 
 function displayScores() {
     console.log("Need to show the score");
+    /* clear the page, remove all the qa elements */
+    qaEl.removeChild(questionEl);
+    qaEl.removeChild(answerListUl);
+    for (var i = 0; i < 4; i++) {
+        answerListUl.removeChild(answersLi[i]);
+    }
+
+    qaEl.removeChild(nextButtonEl);
+    qaEl.removeChild(responseToUserEl);
+
     /* show the scores */
+    resultsCaptionEl = document.createElement("h2");
+    resultsCaptionEl.textContent = "All Done!"
+    resultsCaptionEl.setAttribute("style", "font-weight: bold; padding: 5px; margin-left: 10px;");
+    qaEl.appendChild(resultsCaptionEl);
+
+    scoreEl = document.createElement("h4");
+    scoreEl.textContent = "Your score is: " + quizTime;
+    scoreEl.setAttribute("style", "font-weight: bold; padding: 5px; margin: 10px;");
+    qaEl.appendChild(scoreEl);  
+
+    /* Enter initials + Submit */
+    /* This <div> contains "Enter Initials: <input box> Submit button " */
+    initialsDivEl = document.createElement("div");
+    qaEl.appendChild(initialsDivEl);
+
+    enterInitialsEl = document.createElement("label");
+    enterInitialsEl.textContent = "Enter Initials:";
+    enterInitialsEl.setAttribute("style", "font-weight: bold; padding: 5px; margin-left: 10px; margin-top: 10px;");
+    initialsDivEl.appendChild(enterInitialsEl);
+
+    initialsEl = document.createElement("textarea");
+    initialsEl.setAttribute("style", "margin-left: 10px; margin-top: 10px; text-transform: uppercase;");
+    initialsEl.rows = "1";
+    initialsEl.cols = "10";
+    initialsDivEl.appendChild(initialsEl);
+
+    submitButtonEl = document.createElement("button");
+    submitButtonEl.textContent = "Submit";
+    submitButtonEl.setAttribute("style", "padding: 5px; margin-left: 10px;");
+    initialsDivEl.appendChild(submitButtonEl);
+
+    /* when you hit submit, stores to local storage */
+    
     /* enable the start button again */
     startButtonEl.disabled = false;
 }

@@ -92,6 +92,16 @@ function displayQuestion(event) {
                 answersLi[i] = document.createElement("li");
                 answerListUl.appendChild(answersLi[i]);
                 answersLi[i].setAttribute("style", "background-color: lightblue; width: 200px; padding: 10px; margin: 5px;");
+                answersLi[i].addEventListener("mouseenter", function(event) {
+                    var item = event.target;
+                    item.setAttribute("style", "background-color: lightgrey; width: 200px; padding: 10px; margin: 5px;");
+
+                });
+                answersLi[i].addEventListener("mouseleave", function(event) {
+                    var item = event.target;
+                    item.setAttribute("style", "background-color: lightblue; width: 200px; padding: 10px; margin: 5px;");
+
+                });
             }
 
             /* add the next button */
@@ -113,6 +123,16 @@ function displayQuestion(event) {
         }
         responseToUserEl.textContent = "";
         answerListUl.addEventListener("click", checkAnswer);
+        /*
+        answerListUl.addEventListener("mouseenter", function(event) {
+            var item = event.target;
+            item.setAttribute("style", "background-color: darkblue; ")
+        });
+        answerListUl.addEventListener("mouseleave", function(event) {
+            var item = event.target;
+            item.setAttribute("style", "background-color: lightblue; ")
+        });
+        */
 
         /* don't show the next until the user has answered this one*/
         /* showNext should be set to true in the Next button event listener */
@@ -196,8 +216,6 @@ function displayScores() {
     /* when you hit submit, stores to local storage */
     submitButtonEl.addEventListener("click", handleScoreSubmit);
     
-    /* enable the start button again */
-    startButtonEl.disabled = false;
 }
 
 function handleScoreSubmit() {
@@ -254,8 +272,12 @@ function goBackToStart() {
 
     /* return to start */
     resetTime();
+    /*
     introEl.children[0].textContent = "This is a timed multiple choice quiz with only one correct answer for each question. Good luck!";
     startButtonEl.disabled = false;
+    */
+    introEl.setAttribute("style", "visibility: visible;");
+    startButtonEl.setAttribute("style", "visibility: visible;");
     showNext = true;
     nextQuestion = 0;
 }
@@ -267,13 +289,13 @@ function resetTime() {
 
 function startQuiz() {
 
-    /* Remove intro to the game */
+    /* Remove intro to the game, and make Start button inactive */
+    /*
     introEl.children[0].textContent = "";
     startButtonEl.disabled = true;
-
-       /* Start button: 1) remove 2) make it grey/ inactive */
-    /* 3) change to 'stop' 4) change to 'restart' */
-    // startButtonEl.textContent = "";
+    */
+    introEl.setAttribute("style", "visibility: hidden;");
+    startButtonEl.setAttribute("style", "visibility: hidden;");
 
     var timerId = setInterval(function() {
         quizTime--;

@@ -47,7 +47,19 @@ var qa3 = {
     answer: "any combination of types"
 };
 
-var qaList = [qa1, qa2, qa3];                
+var qa4 = {
+    question: "String values must be enclosed within _________ .",
+    choices: ["parentheses", "square brackets", "curly braces", "quotes"],
+    answer: "quotes"
+};
+
+var qa5 = {
+    question: "The box model for elements includes this property - ___________",
+    choices: ["padding", "margin", "border", "all"],
+    answer: "all"
+};
+
+var qaList = [qa1, qa2, qa3, qa4, qa5];                
 var showNext = true;
 var currentQuestion;
 var nextQuestion = 0;

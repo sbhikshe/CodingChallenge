@@ -315,7 +315,6 @@ function startQuiz() {
         } else {
             var isQuestionDisplayed = runQuiz();
             if ( isQuestionDisplayed === "new") {
-                /* add the next button listener */
                 console.log("new question displayed, wait for answer");
             } else if (isQuestionDisplayed === "same") {
                 console.log("Continue to display same question, Waiting for user to respond");
